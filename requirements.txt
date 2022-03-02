@@ -1,5 +1,4 @@
 pandas
 numpy
-PIL
 PILasOPENCV
 streamlit
