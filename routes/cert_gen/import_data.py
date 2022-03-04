@@ -18,8 +18,9 @@ def import_data():
         arr = np.array(df.keys())
         heading = st.selectbox("Select Heading", arr)
         para= st.selectbox("Enter Paragraph", arr)
+        email= st.selectbox("Enter Email", arr)
         
-        return True ,df, heading, para
+        return True ,df, heading, para, email
     
     else: 
         st.write("No data uploaded")
