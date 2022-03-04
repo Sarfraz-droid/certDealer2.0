@@ -3,9 +3,7 @@ import pandas as pd
 import numpy as np
 from PIL import Image, ImageFont, ImageDraw
 import base64
-
-
-
+from zipfile import ZipFile
 class Position:
     def __init__(self):
         self.x = 0
@@ -14,6 +12,8 @@ class Position:
 
 class CertHandler:
     def __init__(self):
+        self.Subject = None
+        self.Body = None
         self.fontHead = None
         self.fontPara = None
         self.head_pos = None
@@ -36,6 +36,37 @@ def addPara(designation,draw,fontPara,x,y, imageWidth, isRightAligned):
       x -= w;
   draw.text((x,y),designation,(0,0,0),font=fontPara)
 
+def download_all(cert: CertHandler, cert_template: any):
+    
+    n = len(cert.head_arr)
+    zipObj = ZipFile("Certificates.zip", "w")
+    
+    for i in range(n):
+        generate(cert.head_pos, cert.para_pos, cert.head_arr[i], cert.para_arr[i], cert_template, cert.fontHead, cert.fontPara, cert.isRightAligned)
+        zipObj.write(f'certs/{cert.head_arr[i]}.png')
+
+    zipObj.close()
+
+    with open('Certificates.zip', 'rb') as file:
+        btn = st.download_button(label="Download Certificates", file_name="Certificates.zip", data=file)
+    
+    
+    
+    
+    pass
+
+def generate(head_pos: Position, para_pos: Position,headtext,paratext, cert_template, fontHead, fontBody, isRightAligned):
+    certificate = Image.open(cert_template)
+    draw = ImageDraw.Draw(certificate)
+    imageWidth = certificate.size[0]
+    
+    st.caption('Image Width: ' + str(imageWidth))
+    
+    addHeading(headtext,draw,fontHead,head_pos.x,head_pos.y, imageWidth, isRightAligned)
+    addPara(paratext,draw,fontBody,para_pos.x,para_pos.y, imageWidth, isRightAligned)
+    st.image(certificate, caption="Certificate")
+    
+    certificate.save(f'certs/{headtext}.png')
 
 def generate_cert(head_pos: Position, para_pos: Position,headtext,paratext, cert_template, fontHead, fontBody, isRightAligned):
     certificate = Image.open(cert_template)
@@ -48,9 +79,7 @@ def generate_cert(head_pos: Position, para_pos: Position,headtext,paratext, cert
     addPara(paratext,draw,fontBody,para_pos.x,para_pos.y, imageWidth, isRightAligned)
     st.image(certificate, caption="Certificate")
     
-    certificate.save('certificate.png')
-    
-
+    certificate.save('certificate.png')    
 
 def generate_cert_image(df, head_pos, para_pos,headtext,paratext, cert_template, fontHead, fontBody, isRightAligned):
     certificate = Image.open(cert_template)
@@ -80,7 +109,6 @@ def display_data(df,heading,para, cert_template, email):
     
     if font_head != None and font_para != None:
         st.caption("Font uploaded successfully")
-        
         st.caption("Head Info")
         cert.head_pos = Position()
         
@@ -108,8 +136,13 @@ def display_data(df,heading,para, cert_template, email):
 
         if st.button('Generate Demo'):
             generate_cert(cert.head_pos, cert.para_pos, cert.head_arr[pos],cert.para_arr[pos], cert_template, cert.fontHead, cert.fontPara, cert.isRightAligned)
-        else:
-            st.write("No data uploaded")
+            # st.write("No data uploaded")
+        
+        if st.button('Download All'):
+            download_all(cert, cert_template)
+            pass
+            
+        
         return cert
     else:
         return None

@@ -12,7 +12,7 @@ param = st.experimental_get_query_params()
 def main():
     add_selectbox = st.sidebar.selectbox(
         "Select Choice",
-        ("Get Access Token", "Send Certificate"),
+        ("Send Certificate","Get Access Token"),
     )
 
     if add_selectbox == "Get Access Token":

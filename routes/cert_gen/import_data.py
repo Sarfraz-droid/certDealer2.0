@@ -10,6 +10,7 @@ def import_data():
     df = None
     heading = None
     para = None
+    email = None
     
     if dataset != None:
         df = pd.read_csv(dataset)
@@ -25,6 +26,6 @@ def import_data():
     else: 
         st.write("No data uploaded")
         
-    return False ,df, heading, para
+    return False ,df, heading, para, email
         
     

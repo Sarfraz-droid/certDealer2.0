@@ -35,8 +35,15 @@ def mailer(fromaddr,frompass,toaddr,subject,msgbody,file_name,filepath):
 def send_mail(df,result: CertHandler, cert_template: any):
     st.subheader("Send Mail")
     
+    st.write("TroubleShooting Tips")
+    st.write("1. Make sure you have the correct email address and Password")
+    st.markdown("2. On Error, [Enable Less Secure Apps](https://myaccount.google.com/lesssecureapps)")
+    st.markdown("3. If the error still exists, [Display Unlock Captcha](https://accounts.google.com/b/0/DisplayUnlockCaptcha)")
+    
     email = st.text_input("Enter Email")
     password = st.text_input("Enter Password", type="password")
+    subject = st.text_input("Enter Subject")
+    body = st.text_area("Enter Body")
     mail_button = st.button("Send Mail")
     
     if mail_button:
@@ -48,4 +55,4 @@ def send_mail(df,result: CertHandler, cert_template: any):
         for i in range(n):
             # pass
             generate_cert(result.head_pos, result.para_pos, head_arr[i], para_arr[i], cert_template, result.fontHead, result.fontPara, result.isRightAligned)
-            mailer(email,password,result.email_arr[i],'Certificate','message', f'{i}.png','./certificate.png')
+            mailer(email,password,result.email_arr[i],subject,body, f'{i}.png','./certificate.png')
