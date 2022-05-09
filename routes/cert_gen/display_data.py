@@ -9,6 +9,7 @@ class Position:
         self.x = 0
         self.y = 0
         self.fontSize = 0
+        self.hidden = False
 
 class CertHandler:
     def __init__(self):
@@ -24,17 +25,20 @@ class CertHandler:
         self.email_arr= []
         
 
-def addHeading(heading,draw,fontHead,x,y, imageWidth, isRightAligned):
+def addHeading(heading,draw,fontHead,x,y, imageWidth, isRightAligned,hidden):
   w,h = draw.textsize(heading,font=fontHead);
   if isRightAligned :
       x -= w;
-  draw.text((x,y),heading,(0,0,0),font=fontHead)
+  if hidden == False:
+    draw.text((x,y),heading,(0,0,0),font=fontHead)
 
-def addPara(designation,draw,fontPara,x,y, imageWidth, isRightAligned):
+def addPara(designation,draw,fontPara,x,y, imageWidth, isRightAligned,hidden):
+    
   w,h = draw.textsize(designation,font=fontPara);
   if isRightAligned :
       x -= w;
-  draw.text((x,y),designation,(0,0,0),font=fontPara)
+  if hidden == False:
+      draw.text((x,y),designation,(0,0,0),font=fontPara)
 
 def download_all(cert: CertHandler, cert_template: any):
     
@@ -62,8 +66,8 @@ def generate(head_pos: Position, para_pos: Position,headtext,paratext, cert_temp
     
     st.caption('Image Width: ' + str(imageWidth))
     
-    addHeading(headtext,draw,fontHead,head_pos.x,head_pos.y, imageWidth, isRightAligned)
-    addPara(paratext,draw,fontBody,para_pos.x,para_pos.y, imageWidth, isRightAligned)
+    addHeading(headtext,draw,fontHead,head_pos.x,head_pos.y, imageWidth, isRightAligned,head_pos.hidden)
+    addPara(paratext,draw,fontBody,para_pos.x,para_pos.y, imageWidth, isRightAligned, para_pos.hidden)
     st.image(certificate, caption="Certificate")
     
     certificate.save(f'certs/{headtext}.png')
@@ -75,8 +79,8 @@ def generate_cert(head_pos: Position, para_pos: Position,headtext,paratext, cert
     
     st.caption('Image Width: ' + str(imageWidth))
     
-    addHeading(headtext,draw,fontHead,head_pos.x,head_pos.y, imageWidth, isRightAligned)
-    addPara(paratext,draw,fontBody,para_pos.x,para_pos.y, imageWidth, isRightAligned)
+    addHeading(headtext,draw,fontHead,head_pos.x,head_pos.y, imageWidth, isRightAligned, head_pos.hidden)
+    addPara(paratext,draw,fontBody,para_pos.x,para_pos.y, imageWidth, isRightAligned, para_pos.hidden)
     st.image(certificate, caption="Certificate")
     
     certificate.save('certificate.png')    
@@ -115,14 +119,15 @@ def display_data(df,heading,para, cert_template, email):
         cert.head_pos.x = st.number_input("Head X",min_value=0,max_value=8000,value=3140)
         cert.head_pos.y = st.number_input("Head Y",min_value=0,max_value=8000,value=1130)
         cert.head_pos.fontSize = st.number_input("Head Font Size",min_value=0,max_value=3152,value=100)
-        
+        cert.head_pos.hidden = st.checkbox("Hide Head")
         cert.para_pos = Position()
         
         st.caption("Para X/Y Pos")
         cert.para_pos.x = st.number_input("Para X",min_value=0,max_value=3152,value=3140)
         cert.para_pos.y = st.number_input("Para Y",min_value=0,max_value=3152,value=1359)
         cert.para_pos.fontSize = st.number_input("Para Font Size",min_value=0,max_value=3152,value=50)
-        
+        cert.para_pos.hidden = st.checkbox("Hide Para")
+
         cert.isRightAligned = st.checkbox("Right Aligned",value=True)
         
         cert.head_arr = np.array(df[heading])
